@@ -2,9 +2,17 @@
 
     <div class="mb-3 signin__form--input">
         <label class="form-label">{{ label }}</label>
-        <input :required="required" :type="type" class="form-control" :placeholder="placeholder" :value="inputValue" @input="$emit('update:inputValue', $event.target.value)">
-        <div v-if="isValidated" class="alert alert-danger mt-3" role="alert"><slot name="errorMsg1"/></div>
-        <div v-if="isValidated2" class="alert alert-danger mt-3" role="alert"><slot name="errorMsg2"/></div>
+        <input 
+        class="form-control"
+        :required="required" 
+        :type="type"
+        :placeholder="placeholder"
+        @formValidation="$emit.testForm"
+        @input="$emit('update:inputValue', $event.target.value)">
+
+            <div v-if="!isValidated" class="alert alert-danger mt-3" role="alert"><slot name="errorMsg1"/></div>
+            <div v-if="!isValidated2" class="alert alert-danger mt-3" role="alert"><slot name="errorMsg2"/></div>
+
     </div>
 
 </template>
@@ -22,21 +30,17 @@ export default {
             Boolean,
             default: false
         },
-        placeholder: {
-            String
-        },
         label: {
             String,
             require: true
         },
-        inputValue: {
-            String
-        },
+        placeholder: String,
+        inputValue: String
     },
     data(){
         return {
-            isValidated: false,
-            isValidated2: false
+            isValidated: true,
+            isValidated2: true
         }
     },
     watch: {
@@ -47,30 +51,30 @@ export default {
             if(this.type == 'password') {
                 this.passwordValidation(value)                
             }
-
-        }
+        },
     },
     methods: {
-        emailValidation(value){
+        emailValidation(data){
             //expresion regular para comprobar si es un email valido
             const reg = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/;
 
-            reg.test(this.inputValue) ? this.isValidated2 = false : this.isValidated2 = true
+            reg.test(this.inputValue) ? this.isValidated2 = true : this.isValidated2 = false
 
-            if(value.length === 0){
-                this.isValidated = true
-                this.isValidated2 = false
-            } else 
+            if(data.length === 0){
                 this.isValidated = false
+                this.isValidated2 = true
+            } else 
+                this.isValidated = true
         },
-        passwordValidation(value){
-            this.inputValue.length >= 6 ? this.isValidated2 = false : this.isValidated2 = true
+        passwordValidation(data){
 
-            if(value.length === 0){
-                this.isValidated = true
-                this.isValidated2 = false
-            } else 
+            this.inputValue.length >= 6 ? this.isValidated2 = true : this.isValidated2 = false
+
+            if(data.length === 0){
                 this.isValidated = false
+                this.isValidated2 = true
+            } else 
+                this.isValidated = true
         }
     }
 }

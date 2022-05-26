@@ -9,14 +9,27 @@
                     <form @submit.prevent="login()" class="signin__form">
                         <h2 class="mt-5 mb-4 font-weigh">Ingresa a tu cuenta</h2>
 
-                        <div v-if="formValidation" class="alert alert-danger mt-3" role="alert">Tu email o contraseña son incorrectos. Revísalos y vuelve a intentar.</div>
+                        <div 
+                        v-if="formError" 
+                        class="alert alert-danger mt-3" 
+                        role="alert">
+                          Tu email o contraseña son incorrectos. Revísalos y vuelve a intentar.
+                        </div>
 
-                        <FormInput ref="username" type="text"  placeholder="Ej: usuario@mail.com" label="Email" v-model:inputValue="username">
+                        <FormInput 
+                          type="text"  
+                          placeholder="Ej: usuario@mail.com" 
+                          label="Email"
+                          v-model:inputValue="username">
                             <template #errorMsg1>Necesitamos tu email.</template>
                             <template #errorMsg2>El email ingresado no es correcto.</template>
                         </FormInput>
 
-                        <FormInput ref="password" type="password"  placeholder="Escribe tu contraseña" label="Contraseña" v-model:inputValue="password" >
+                        <FormInput 
+                          type="password"
+                          placeholder="Escribe tu contraseña" 
+                          label="Contraseña" 
+                          v-model:inputValue="password">
                             <template #errorMsg1>Necesitamos tu contraseña.</template>
                             <template #errorMsg2>La contraseña no tiene un formato válido.</template>
                         </FormInput>
@@ -54,29 +67,33 @@ export default {
       titlePage: 'Ingresa a tu cuenta - Wobiz',
       username: '',
       password: '',
-      formValidation: false
+      formError: false
     }
   },
   mounted() {
     document.title = this.titlePage
   },
   methods: {
-    login(){
+    async login(){
+      if(this.formData === true) {
       const auth = { 
         username: this.username, 
         password: this.password 
       };
       const url = 'admin.localwobiz.com/login/';
-      axios.post(url, auth)
+      await axios.post(url, auth)
         .then(res => {
           console.log(res)
         }).catch(err => {
           console.log(err)
-          this.formValidation = true
+          this.formError = true
         })
-      
+      } else {
+        this.formError = true
+      }
+
     }
-  },
+  }
 }
 </script>
 
